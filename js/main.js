@@ -3,11 +3,8 @@
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 
-/*process to create object
-1. begin path
-2. define the object shape
-3. closepath
-*/
+//define player variable
+var score = 0;
 
 //define ball
 var x = canvas.width/2;
@@ -53,6 +50,13 @@ function keyDownHandler(e){
 	keyPressed[e.keyCode] = true;
 }
 
+//drawing score
+function drawScore(){
+	ctx.font = "16px Arial";
+	ctx.fillStyle = "#0095DD";
+	ctx.fillText("Score: " + score, 8, 20);
+}
+
 //drawing loop
 function drawBall(){
 	ctx.beginPath();
@@ -92,13 +96,19 @@ function drawBricks(){
 //collision for bricks
 function collisionDetection(){
 	for(var c = 0; c < brickColumnCount; c++){
-		for(var r= 0; r< brcikRowCount; r++){
+		for(var r= 0; r< brickRowCount; r++){
 			var b = bricks[c][r];
 
 			//if collision then change the brick status
-			if(x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight){
+			if(b.status == 1 && x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight){
 				dy = -dy;
 				b.status = 0;
+				score++;
+				
+				if(score == brickRowCount * brickColumnCount){
+					alert("You Won! Congratulations!");
+					document.location.reload();
+				}
 			}
 		}
 	}
@@ -111,6 +121,7 @@ function draw(){
 	drawBricks();
 	drawBall();
 	drawPaddle();
+	drawScore();
 	
 	//paddle physics and movement
 	if(keyPressed[39] && paddleX < canvas.width-paddleWidth){
@@ -140,7 +151,10 @@ function draw(){
 	x+=dx;
 	y+=dy;
 
+		requestAnimationFrame(draw);
+
 	
 }
 
-setInterval(draw, 10); //call draw every 10 milliseconds
+requestAnimationFrame(draw);
+//setInterval(draw, 10); //call draw every 10 milliseconds
